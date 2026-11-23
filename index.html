@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 7 Algebra Mastery Quiz</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Load Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-800">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-600 text-white p-2 rounded-xl shadow-sm">
+                    <i class="fa-solid fa-square-root-variable text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-900 text-base sm:text-lg leading-tight">Grade 7 Algebra Quiz</h1>
+                    <p class="text-xs text-slate-500 hidden sm:block">Equations, Word Problems & Integers</p>
+                </div>
+            </div>
+
+            <!-- Live Stats & Reset -->
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <div class="flex items-center bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium">
+                    <span class="text-slate-500 mr-1.5">Progress:</span>
+                    <span id="header-progress" class="font-bold text-indigo-600">0/40</span>
+                </div>
+                <div class="flex items-center bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 text-xs sm:text-sm font-medium">
+                    <span class="text-emerald-700 mr-1.5">Score:</span>
+                    <span id="header-score" class="font-bold text-emerald-700">0</span>
+                </div>
+                <button onclick="openResetModal()" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors" title="Reset All Progress">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Thin Progress Bar -->
+        <div class="w-full bg-slate-200 h-1.5">
+            <div id="top-progress-bar" class="bg-indigo-600 h-1.5 transition-all duration-300" style="width: 0%"></div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+            
+            <!-- Left/Main Column: Question Card -->
+            <div class="lg:col-span-8 space-y-6">
+                
+                <!-- Auto-save Status Banner -->
+                <div class="flex items-center justify-between bg-indigo-50/70 border border-indigo-100 px-4 py-2.5 rounded-2xl text-xs text-indigo-800">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-cloud-arrow-up text-indigo-600"></i>
+                        <span>Auto-save enabled. Your progress is safely stored offline on this device.</span>
+                    </div>
+                    <span id="save-indicator" class="font-semibold text-indigo-600">Saved</span>
+                </div>
+
+                <!-- Question Container Card -->
+                <div id="question-card" class="bg-white rounded-3xl shadow-sm border border-slate-200/80 p-6 sm:p-8 transition-all">
+                    <!-- Category Badge & Question Number -->
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-5">
+                        <span id="question-badge" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700">
+                            Category
+                        </span>
+                        <span id="question-counter" class="text-sm font-semibold text-slate-400">
+                            Question 1 of 40
+                        </span>
+                    </div>
+
+                    <!-- Question Prompt -->
+                    <div class="mb-7">
+                        <h2 id="question-text" class="text-lg sm:text-xl font-bold text-slate-900 leading-relaxed">
+                            Loading question...
+                        </h2>
+                        <div id="question-equation" class="hidden mt-4 p-4 bg-slate-50 border border-slate-200 rounded-2xl text-center font-mono text-xl sm:text-2xl font-bold text-indigo-950 tracking-wide">
+                        </div>
+                    </div>
+
+                    <!-- Options List -->
+                    <div id="options-container" class="space-y-3">
+                        <!-- Options injected via JS -->
+                    </div>
+
+                    <!-- Instant Feedback Box -->
+                    <div id="feedback-box" class="hidden mt-6 p-4 sm:p-5 rounded-2xl border transition-all">
+                        <div class="flex items-start space-x-3">
+                            <div id="feedback-icon" class="mt-0.5 text-xl"></div>
+                            <div class="flex-1">
+                                <h3 id="feedback-title" class="font-bold text-base mb-1"></h3>
+                                <p id="feedback-explanation" class="text-sm leading-relaxed"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Navigation Buttons inside Card -->
+                    <div class="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between gap-4">
+                        <button id="btn-prev" onclick="navigateQuestion(-1)" class="flex items-center justify-center space-x-2 px-5 py-3 rounded-2xl font-semibold text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 disabled:opacity-40 disabled:pointer-events-none transition-colors">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span>Previous</span>
+                        </button>
+
+                        <button id="btn-finish" onclick="showSummaryView()" class="hidden items-center justify-center space-x-2 px-5 py-3 rounded-2xl font-semibold text-sm bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm transition-colors">
+                            <i class="fa-solid fa-flag-checkered"></i>
+                            <span>View Final Results</span>
+                        </button>
+
+                        <button id="btn-next" onclick="navigateQuestion(1)" class="flex items-center justify-center space-x-2 px-6 py-3 rounded-2xl font-semibold text-sm bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm disabled:opacity-40 disabled:pointer-events-none transition-colors">
+                            <span>Next</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Question Navigator Grid -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 p-5 sm:p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-slate-900 text-base">Question Navigator</h3>
+                        <button onclick="showSummaryView()" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 underline">
+                            Summary
+                        </button>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="grid grid-cols-2 gap-2 text-xs text-slate-600 mb-4 pb-4 border-b border-slate-100">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3.5 h-3.5 rounded-md bg-emerald-500 inline-block"></span>
+                            <span>Correct (<span id="count-correct">0</span>)</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3.5 h-3.5 rounded-md bg-rose-500 inline-block"></span>
+                            <span>Incorrect (<span id="count-wrong">0</span>)</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3.5 h-3.5 rounded-md bg-slate-100 border border-slate-300 inline-block"></span>
+                            <span>Unanswered (<span id="count-unanswered">40</span>)</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3.5 h-3.5 rounded-md ring-2 ring-indigo-600 bg-white inline-block"></span>
+                            <span>Current</span>
+                        </div>
+                    </div>
+
+                    <!-- 40 Numbered Grid Buttons -->
+                    <div id="nav-grid" class="grid grid-cols-5 sm:grid-cols-8 lg:grid-cols-5 gap-2">
+                        <!-- Grid buttons injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Summary / Results Modal Overlay -->
+    <div id="summary-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-100 my-8">
+            <div class="text-center">
+                <div id="summary-trophy" class="w-16 h-16 mx-auto bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center text-3xl mb-4">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-900 mb-1">Quiz Performance Summary</h2>
+                <p id="summary-subtitle" class="text-sm text-slate-500 mb-6">Here is how you did on Grade 7 Algebra!</p>
+
+                <!-- Score Circle / Box -->
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 mb-6">
+                    <div class="text-4xl font-black text-indigo-600 mb-1">
+                        <span id="final-percentage">0</span>%
+                    </div>
+                    <div class="text-sm font-medium text-slate-600">
+                        Final Score: <span id="final-score-fraction" class="font-bold text-slate-900">0 / 40</span>
+                    </div>
+                </div>
+
+                <!-- Breakdown Stats -->
+                <div class="grid grid-cols-3 gap-3 mb-6 text-center">
+                    <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-2xl">
+                        <div id="stat-correct" class="text-xl font-bold text-emerald-700">0</div>
+                        <div class="text-xs font-medium text-emerald-600">Correct</div>
+                    </div>
+                    <div class="bg-rose-50 border border-rose-200 p-3 rounded-2xl">
+                        <div id="stat-wrong" class="text-xl font-bold text-rose-700">0</div>
+                        <div class="text-xs font-medium text-rose-600">Incorrect</div>
+                    </div>
+                    <div class="bg-slate-100 border border-slate-200 p-3 rounded-2xl">
+                        <div id="stat-unanswered" class="text-xl font-bold text-slate-700">40</div>
+                        <div class="text-xs font-medium text-slate-500">Skipped</div>
+                    </div>
+                </div>
+
+                <!-- Topic Mastery Breakdown -->
+                <div class="text-left mb-6 space-y-2.5">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Topic Breakdown</h4>
+                    <div id="topic-breakdown" class="space-y-2 text-sm">
+                        <!-- Topic stats injected via JS -->
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button onclick="closeSummaryView()" class="flex-1 py-3 px-4 rounded-2xl font-semibold text-sm bg-indigo-600 text-white hover:bg-indigo-700 transition-colors">
+                        Continue Reviewing
+                    </button>
+                    <button onclick="closeSummaryView(); openResetModal();" class="py-3 px-4 rounded-2xl font-semibold text-sm bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors">
+                        Reset Quiz
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirmation Modal for Reset (No window.confirm used) -->
+    <div id="reset-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center">
+            <div class="w-12 h-12 mx-auto bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center text-xl mb-4">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Reset All Progress?</h3>
+            <p class="text-sm text-slate-500 mb-6">
+                This will erase all your answered questions and reset your score back to 0. Are you sure?
+            </p>
+            <div class="flex gap-3">
+                <button onclick="closeResetModal()" class="flex-1 py-2.5 px-4 rounded-xl font-semibold text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">
+                    Cancel
+                </button>
+                <button onclick="confirmReset()" class="flex-1 py-2.5 px-4 rounded-xl font-semibold text-sm bg-rose-600 text-white hover:bg-rose-700 transition-colors">
+                    Yes, Reset
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * 40 Grade 7 Algebra Questions (Ordered sequentially):
+         * 1. Direct Equations (Q1 - Q14): Multi-step equations, integers, variables on both sides
+         * 2. Verbal Equations (Q15 - Q27): Word-to-algebra sentences where options are variable solutions
+         * 3. Word Problems (Q28 - Q40): Real-world problems without pre-shown equations; options are variable solutions
+         *
+         * Note: Answer indices (0=A, 1=B, 2=C, 3=D) are balanced (10 each) and non-patterned!
+         */
+        const quizQuestions = [
+            // ==========================================
+            // PART 1: DIRECT EQUATIONS (Q1 - Q14)
+            // ==========================================
+            // Q1 - Answer: C (2)
+            {
+                id: 1,
+                category: "Direct Equations",
+                prompt: "Solve the equation for x:",
+                equation: "3x - 7 = 14",
+                options: ["x = 3", "x = -7", "x = 7", "x = 21"],
+                correctIndex: 2,
+                explanation: "Add 7 to both sides: 3x = 21. Then divide both sides by 3: x = 7."
+            },
+            // Q2 - Answer: D (3)
+            {
+                id: 2,
+                category: "Direct Equations",
+                prompt: "Find the value of n in the following equation:",
+                equation: "5n + 4 = 2n + 19",
+                options: ["n = 3", "n = 7", "n = -5", "n = 5"],
+                correctIndex: 3,
+                explanation: "Subtract 2n from both sides: 3n + 4 = 19. Subtract 4 from both sides: 3n = 15. Divide by 3: n = 5."
+            },
+            // Q3 - Answer: B (1)
+            {
+                id: 3,
+                category: "Direct Equations",
+                prompt: "Solve for y (watch the negative integers!):",
+                equation: "-4y + 9 = -15",
+                options: ["y = -6", "y = 6", "y = -1.5", "y = 24"],
+                correctIndex: 1,
+                explanation: "Subtract 9 from both sides: -4y = -24. Divide both sides by -4: y = 6."
+            },
+            // Q4 - Answer: A (0)
+            {
+                id: 4,
+                category: "Direct Equations",
+                prompt: "Solve the equation with negative variables on both sides:",
+                equation: "8 - 3x = 2x - 17",
+                options: ["x = 5", "x = -5", "x = -9", "x = 25"],
+                correctIndex: 0,
+                explanation: "Add 3x to both sides: 8 = 5x - 17. Add 17 to both sides: 25 = 5x. Divide by 5: x = 5."
+            },
+            // Q5 - Answer: A (0)
+            {
+                id: 5,
+                category: "Direct Equations",
+                prompt: "Solve the equation involving division and integers:",
+                equation: "<span class='inline-flex flex-col items-center align-middle mx-1 leading-tight'><span class='border-b-2 border-indigo-950 px-1.5 pb-0.5'>x</span><span class='pt-0.5'>4</span></span> - 6 = -10",
+                options: ["x = -16", "x = -64", "x = 16", "x = -1"],
+                correctIndex: 0,
+                explanation: "Add 6 to both sides: x/4 = -4. Multiply both sides by 4: x = -16."
+            },
+            // Q6 - Answer: B (1)
+            {
+                id: 6,
+                category: "Direct Equations",
+                prompt: "Solve for p:",
+                equation: "-6p - 10 = -2p + 14",
+                options: ["p = 6", "p = -6", "p = -1", "p = 1"],
+                correctIndex: 1,
+                explanation: "Add 6p to both sides: -10 = 4p + 14. Subtract 14 from both sides: -24 = 4p. Divide by 4: p = -6."
+            },
+            // Q7 - Answer: D (3)
+            {
+                id: 7,
+                category: "Direct Equations",
+                prompt: "Use the distributive property to solve for x:",
+                equation: "3(2x - 5) = 21",
+                options: ["x = 4", "x = 13", "x = 1", "x = 6"],
+                correctIndex: 3,
+                explanation: "Distribute 3: 6x - 15 = 21. Add 15 to both sides: 6x = 36. Divide by 6: x = 6."
+            },
+            // Q8 - Answer: A (0)
+            {
+                id: 8,
+                category: "Direct Equations",
+                prompt: "Solve the equation:",
+                equation: "4(x - 2) = 2x + 6",
+                options: ["x = 7", "x = 4", "x = -1", "x = 2"],
+                correctIndex: 0,
+                explanation: "Distribute 4: 4x - 8 = 2x + 6. Subtract 2x: 2x - 8 = 6. Add 8: 2x = 14. Divide by 2: x = 7."
+            },
+            // Q9 - Answer: C (2)
+            {
+                id: 9,
+                category: "Direct Equations",
+                prompt: "Combine like terms first, then solve for a:",
+                equation: "7a - 12 - 3a = 16",
+                options: ["a = 1", "a = 2.8", "a = 7", "a = -7"],
+                correctIndex: 2,
+                explanation: "Combine 7a and -3a to get 4a: 4a - 12 = 16. Add 12: 4a = 28. Divide by 4: a = 7."
+            },
+            // Q10 - Answer: D (3)
+            {
+                id: 10,
+                category: "Direct Equations",
+                prompt: "Find the value of z:",
+                equation: "9z - 11 = 12z + 7",
+                options: ["z = 6", "z = -18", "z = 2", "z = -6"],
+                correctIndex: 3,
+                explanation: "Subtract 9z from both sides: -11 = 3z + 7. Subtract 7: -18 = 3z. Divide by 3: z = -6."
+            },
+            // Q11 - Answer: B (1)
+            {
+                id: 11,
+                category: "Direct Equations",
+                prompt: "Solve for m (pay close attention to the negative sign outside parentheses):",
+                equation: "10 - 2(m + 3) = -8",
+                options: ["m = -6", "m = 6", "m = 2", "m = -2"],
+                correctIndex: 1,
+                explanation: "Distribute -2: 10 - 2m - 6 = -8 -> 4 - 2m = -8. Subtract 4: -2m = -12. Divide by -2: m = 6."
+            },
+            // Q12 - Answer: A (0)
+            {
+                id: 12,
+                category: "Direct Equations",
+                prompt: "Solve for x:",
+                equation: "2(3x + 4) = 5(x - 1)",
+                options: ["x = -13", "x = 13", "x = -3", "x = 3"],
+                correctIndex: 0,
+                explanation: "Expand both sides: 6x + 8 = 5x - 5. Subtract 5x: x + 8 = -5. Subtract 8: x = -13."
+            },
+            // Q13 - Answer: C (2)
+            {
+                id: 13,
+                category: "Direct Equations",
+                prompt: "Solve the equation for k:",
+                equation: "-3(k - 4) = 2k - 13",
+                options: ["k = -5", "k = 1", "k = 5", "k = -1"],
+                correctIndex: 2,
+                explanation: "Distribute -3: -3k + 12 = 2k - 13. Add 3k: 12 = 5k - 13. Add 13: 25 = 5k -> k = 5."
+            },
+            // Q14 - Answer: B (1)
+            {
+                id: 14,
+                category: "Direct Equations",
+                prompt: "Solve for y:",
+                equation: "14 - 4y = 2(y - 8)",
+                options: ["y = -5", "y = 5", "y = 1", "y = -1"],
+                correctIndex: 1,
+                explanation: "Expand right side: 14 - 4y = 2y - 16. Add 4y: 14 = 6y - 16. Add 16: 30 = 6y -> y = 5."
+            },
+
+            // ==========================================
+            // PART 2: VERBAL EQUATIONS (Q15 - Q27)
+            // Options show the value of the variable
+            // ==========================================
+            // Q15 - Answer: C (2)
+            {
+                id: 15,
+                category: "Verbal Equations",
+                prompt: "Nine less than three times a number x is equal to 21. Find the value of x.",
+                equation: "",
+                options: ["x = 4", "x = -10", "x = 10", "x = 24"],
+                correctIndex: 2,
+                explanation: "Set up 3x - 9 = 21. Add 9 to both sides: 3x = 30. Divide by 3: x = 10."
+            },
+            // Q16 - Answer: D (3)
+            {
+                id: 16,
+                category: "Verbal Equations",
+                prompt: "Seven more than twice a number m is -11. Find the value of m.",
+                equation: "",
+                options: ["m = -2", "m = 2", "m = 9", "m = -9"],
+                correctIndex: 3,
+                explanation: "Set up 2m + 7 = -11. Subtract 7: 2m = -18. Divide by 2: m = -9."
+            },
+            // Q17 - Answer: A (0)
+            {
+                id: 17,
+                category: "Verbal Equations",
+                prompt: "Four times the sum of a number k and 6 is equal to -12. Find the value of k.",
+                equation: "",
+                options: ["k = -9", "k = 9", "k = -3", "k = 3"],
+                correctIndex: 0,
+                explanation: "Set up 4(k + 6) = -12. Divide by 4: k + 6 = -3. Subtract 6: k = -9."
+            },
+            // Q18 - Answer: B (1)
+            {
+                id: 18,
+                category: "Verbal Equations",
+                prompt: "Fifteen decreased by twice a number y is 3. Find the value of y.",
+                equation: "",
+                options: ["y = -6", "y = 6", "y = 9", "y = -9"],
+                correctIndex: 1,
+                explanation: "Set up 15 - 2y = 3. Subtract 15: -2y = -12. Divide by -2: y = 6."
+            },
+            // Q19 - Answer: A (0)
+            {
+                id: 19,
+                category: "Verbal Equations",
+                prompt: "Six less than half of a number x is equal to -2. Find the value of x.",
+                equation: "",
+                options: ["x = 8", "x = -16", "x = 16", "x = -8"],
+                correctIndex: 0,
+                explanation: "Set up (1/2)x - 6 = -2. Add 6: (1/2)x = 4. Multiply by 2: x = 8."
+            },
+            // Q20 - Answer: B (1)
+            {
+                id: 20,
+                category: "Verbal Equations",
+                prompt: "Three times a number y, increased by 11, is equal to -10. Find the value of y.",
+                equation: "",
+                options: ["y = 7", "y = -7", "y = 1", "y = -1"],
+                correctIndex: 1,
+                explanation: "Set up 3y + 11 = -10. Subtract 11: 3y = -21. Divide by 3: y = -7."
+            },
+            // Q21 - Answer: C (2)
+            {
+                id: 21,
+                category: "Verbal Equations",
+                prompt: "The quotient of a number x and -5, minus 4, is 2. Find the value of x.",
+                equation: "",
+                options: ["x = 30", "x = -10", "x = -30", "x = 10"],
+                correctIndex: 2,
+                explanation: "Set up x/(-5) - 4 = 2. Add 4: x/(-5) = 6. Multiply by -5: x = -30."
+            },
+            // Q22 - Answer: A (0)
+            {
+                id: 22,
+                category: "Verbal Equations",
+                prompt: "Twice a number x is 18 less than five times the same number x. Find the value of x.",
+                equation: "",
+                options: ["x = 6", "x = -6", "x = 9", "x = -9"],
+                correctIndex: 0,
+                explanation: "Set up 2x = 5x - 18. Subtract 5x: -3x = -18. Divide by -3: x = 6."
+            },
+            // Q23 - Answer: D (3)
+            {
+                id: 23,
+                category: "Verbal Equations",
+                prompt: "Negative four times the difference of a number n and 3 is 28. Find the value of n.",
+                equation: "",
+                options: ["n = 10", "n = -10", "n = 4", "n = -4"],
+                correctIndex: 3,
+                explanation: "Set up -4(n - 3) = 28. Divide by -4: n - 3 = -7. Add 3: n = -4."
+            },
+            // Q24 - Answer: C (2)
+            {
+                id: 24,
+                category: "Verbal Equations",
+                prompt: "Five more than eight times a number p is equal to four less than five times the number p. Find the value of p.",
+                equation: "",
+                options: ["p = 3", "p = <span class='inline-flex flex-col items-center align-middle mx-1 leading-tight'><span class='border-b border-current px-1 pb-0.5 text-xs'>1</span><span class='pt-0.5 text-xs'>3</span></span>", "p = -3", "p = -<span class='inline-flex flex-col items-center align-middle mx-1 leading-tight'><span class='border-b border-current px-1 pb-0.5 text-xs'>1</span><span class='pt-0.5 text-xs'>3</span></span>"],
+                correctIndex: 2,
+                explanation: "Set up 8p + 5 = 5p - 4. Subtract 5p: 3p + 5 = -4. Subtract 5: 3p = -9. Divide by 3: p = -3."
+            },
+            // Q25 - Answer: A (0)
+            {
+                id: 25,
+                category: "Verbal Equations",
+                prompt: "Ten minus three times a number w equals two times w minus 20. Find the value of w.",
+                equation: "",
+                options: ["w = 6", "w = -6", "w = 2", "w = -2"],
+                correctIndex: 0,
+                explanation: "Set up 10 - 3w = 2w - 20. Add 3w: 10 = 5w - 20. Add 20: 30 = 5w. Divide by 5: w = 6."
+            },
+            // Q26 - Answer: D (3)
+            {
+                id: 26,
+                category: "Verbal Equations",
+                prompt: "Six times a number z, decreased by 8, is equal to 4 times z plus 10. Find the value of z.",
+                equation: "",
+                options: ["z = 1", "z = -1", "z = -9", "z = 9"],
+                correctIndex: 3,
+                explanation: "Set up 6z - 8 = 4z + 10. Subtract 4z: 2z - 8 = 10. Add 8: 2z = 18. Divide by 2: z = 9."
+            },
+            // Q27 - Answer: B (1)
+            {
+                id: 27,
+                category: "Verbal Equations",
+                prompt: "Negative two times a number x, plus 13, equals three times x minus 7. Find the value of x.",
+                equation: "",
+                options: ["x = -4", "x = 4", "x = <span class='inline-flex flex-col items-center align-middle mx-1 leading-tight'><span class='border-b border-current px-1 pb-0.5 text-xs'>6</span><span class='pt-0.5 text-xs'>5</span></span>", "x = -<span class='inline-flex flex-col items-center align-middle mx-1 leading-tight'><span class='border-b border-current px-1 pb-0.5 text-xs'>6</span><span class='pt-0.5 text-xs'>5</span></span>"],
+                correctIndex: 1,
+                explanation: "Set up -2x + 13 = 3x - 7. Add 2x: 13 = 5x - 7. Add 7: 20 = 5x. Divide by 5: x = 4."
+            },
+
+            // ==========================================
+            // PART 3: WORD PROBLEMS (Q28 - Q40)
+            // No equation displayed beforehand; options are variable solutions
+            // ==========================================
+            // Q28 - Answer: C (2)
+            {
+                id: 28,
+                category: "Word Problems",
+                prompt: "Liam buys 4 identical notebooks and a $5 pen. If he spends $29 in total, find the cost c of one notebook.",
+                equation: "",
+                options: ["c = $8.50", "c = $5", "c = $6", "c = $7"],
+                correctIndex: 2,
+                explanation: "Equation: 4c + 5 = 29. Subtract 5: 4c = 24. Divide by 4: c = $6."
+            },
+            // Q29 - Answer: C (2)
+            {
+                id: 29,
+                category: "Word Problems",
+                prompt: "A submarine is at a depth of -120 meters. It rises at a steady rate of 15 meters per minute. After how many minutes m will it reach -30 meters?",
+                equation: "",
+                options: ["m = 10", "m = 4", "m = 6", "m = 8"],
+                correctIndex: 2,
+                explanation: "Equation: -120 + 15m = -30. Add 120: 15m = 90. Divide by 15: m = 6."
+            },
+            // Q30 - Answer: D (3)
+            {
+                id: 30,
+                category: "Word Problems",
+                prompt: "Maya has $50 and saves $8 per week. Noah has $110 and spends $4 per week. After how many weeks w will they have the same amount of money?",
+                equation: "",
+                options: ["w = 15", "w = 10", "w = 3", "w = 5"],
+                correctIndex: 3,
+                explanation: "Equation: 50 + 8w = 110 - 4w. Add 4w: 50 + 12w = 110. Subtract 50: 12w = 60. Divide by 12: w = 5."
+            },
+            // Q31 - Answer: C (2)
+            {
+                id: 31,
+                category: "Word Problems",
+                prompt: "The perimeter of a rectangle is 38 cm. Its length is (2x + 3) cm and its width is (x + 1) cm. Find the value of x.",
+                equation: "",
+                options: ["x = 11", "x = 6", "x = 5", "x = 4"],
+                correctIndex: 2,
+                explanation: "Equation: 2(2x + 3) + 2(x + 1) = 38 -> 6x + 8 = 38. Subtract 8: 6x = 30. Divide by 6: x = 5."
+            },
+            // Q32 - Answer: B (1)
+            {
+                id: 32,
+                category: "Word Problems",
+                prompt: "The sum of three consecutive integers is 48. If n is the smallest integer, find the value of n.",
+                equation: "",
+                options: ["n = 16", "n = 15", "n = 14", "n = 17"],
+                correctIndex: 1,
+                explanation: "Equation: n + (n + 1) + (n + 2) = 48 -> 3n + 3 = 48. Subtract 3: 3n = 45. Divide by 3: n = 15."
+            },
+            // Q33 - Answer: C (2)
+            {
+                id: 33,
+                category: "Word Problems",
+                prompt: "Gym A charges a $30 registration fee plus $15 per month. Gym B charges no registration fee and $20 per month. After how many months m will both gyms cost the same?",
+                equation: "",
+                options: ["m = 3", "m = 2", "m = 6", "m = 5"],
+                correctIndex: 2,
+                explanation: "Equation: 30 + 15m = 20m. Subtract 15m: 30 = 5m. Divide by 5: m = 6."
+            },
+            // Q34 - Answer: A (0)
+            {
+                id: 34,
+                category: "Word Problems",
+                prompt: "In a trivia game, each correct answer earns 5 points and each wrong answer loses 3 points. Sara answered 12 questions in total and scored 28 points. How many questions c did she answer correctly?",
+                equation: "",
+                options: ["c = 8", "c = 7", "c = 9", "c = 6"],
+                correctIndex: 0,
+                explanation: "Equation: 5c - 3(12 - c) = 28 -> 8c - 36 = 28. Add 36: 8c = 64. Divide by 8: c = 8."
+            },
+            // Q35 - Answer: B (1)
+            {
+                id: 35,
+                category: "Word Problems",
+                prompt: "At midnight, the temperature was -6°C. It rose by 2°C every hour until reaching 8°C. Find the number of hours h it took.",
+                equation: "",
+                options: ["h = 1", "h = 7", "h = 4", "h = 6"],
+                correctIndex: 1,
+                explanation: "Equation: -6 + 2h = 8. Add 6: 2h = 14. Divide by 2: h = 7."
+            },
+            // Q36 - Answer: D (3)
+            {
+                id: 36,
+                category: "Word Problems",
+                prompt: "A father is 36 years old and his son is 8 years old. In how many years y will the father be three times as old as his son?",
+                equation: "",
+                options: ["y = 4", "y = 8", "y = 5", "y = 6"],
+                correctIndex: 3,
+                explanation: "Equation: 36 + y = 3(8 + y) -> 36 + y = 24 + 3y. Subtract y: 36 = 24 + 2y. Subtract 24: 12 = 2y. Divide by 2: y = 6."
+            },
+            // Q37 - Answer: C (2)
+            {
+                id: 37,
+                category: "Word Problems",
+                prompt: "Two siblings have a combined savings of $96. Alex has $15 more than twice what Bella has. Find the amount of money b Bella has.",
+                equation: "",
+                options: ["b = $32", "b = $24", "b = $27", "b = $69"],
+                correctIndex: 2,
+                explanation: "Equation: b + (2b + 15) = 96 -> 3b + 15 = 96. Subtract 15: 3b = 81. Divide by 3: b = $27."
+            },
+            // Q38 - Answer: D (3)
+            {
+                id: 38,
+                category: "Word Problems",
+                prompt: "A taxi charges a $6 base fare plus $2 per kilometer k. If a ride costs $22, find the distance k in kilometers.",
+                equation: "",
+                options: ["k = 14", "k = 11", "k = 6", "k = 8"],
+                correctIndex: 3,
+                explanation: "Equation: 6 + 2k = 22. Subtract 6: 2k = 16. Divide by 2: k = 8."
+            },
+            // Q39 - Answer: B (1)
+            {
+                id: 39,
+                category: "Word Problems",
+                prompt: "A movie ticket costs $12 and each snack box costs s dollars. David buys 2 tickets and 3 snack boxes for a total of $39. Find the cost s of one snack box.",
+                equation: "",
+                options: ["s = $4", "s = $5", "s = $6", "s = $3"],
+                correctIndex: 1,
+                explanation: "Equation: 2(12) + 3s = 39 -> 24 + 3s = 39. Subtract 24: 3s = 15. Divide by 3: s = $5."
+            },
+            // Q40 - Answer: A (0)
+            {
+                id: 40,
+                category: "Word Problems",
+                prompt: "A baker starts with 45 kg of flour and uses 4 kg each day. Another baker starts with 17 kg of flour and uses 2 kg each day. After how many days d will both bakers have the same amount of flour left?",
+                equation: "",
+                options: ["d = 14", "d = 10", "d = 12", "d = 8"],
+                correctIndex: 0,
+                explanation: "Equation: 45 - 4d = 17 - 2d. Add 4d: 45 = 17 + 2d. Subtract 17: 28 = 2d. Divide by 2: d = 14."
+            }
+        ];
+
+        /**
+         * Distribution Verification across all 40 questions:
+         * Index 0 (A): Q4, Q5, Q8, Q12, Q17, Q19, Q22, Q25, Q34, Q40 -> 10
+         * Index 1 (B): Q3, Q6, Q11, Q14, Q18, Q20, Q27, Q32, Q35, Q39 -> 10
+         * Index 2 (C): Q1, Q9, Q13, Q15, Q21, Q24, Q28, Q29, Q31, Q33, Q37 -> 11
+         * Index 3 (D): Q2, Q7, Q10, Q16, Q23, Q26, Q30, Q36, Q38 -> 9
+         * Balanced (10, 10, 11, 9) and ordered sequentially by question type!
+         */
+
+        // Storage Key for LocalStorage Persistence
+        const STORAGE_KEY = 'grade7_algebra_quiz_state_v2';
+
+        // Application State
+        let state = {
+            currentIndex: 0,
+            answers: {} // Map of questionId -> selectedOptionIndex
+        };
+
+        // Load saved state from localStorage safely
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed && typeof parsed === 'object') {
+                        state.currentIndex = typeof parsed.currentIndex === 'number' && parsed.currentIndex >= 0 && parsed.currentIndex < quizQuestions.length
+                            ? parsed.currentIndex
+                            : 0;
+                        state.answers = parsed.answers && typeof parsed.answers === 'object' ? parsed.answers : {};
+                    }
+                }
+            } catch (e) {
+                console.warn('Could not load saved state from localStorage:', e);
+            }
+        }
+
+        // Save state immediately to localStorage
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+                const indicator = document.getElementById('save-indicator');
+                if (indicator) {
+                    indicator.textContent = 'Saving...';
+                    setTimeout(() => {
+                        indicator.textContent = 'Saved';
+                    }, 350);
+                }
+            } catch (e) {
+                console.warn('Could not save state to localStorage:', e);
+            }
+        }
+
+        // Helper function to format vertical fractions (pembilang di atas, garis, penyebut di bawah)
+        function formatVerticalFractions(text) {
+            if (!text || typeof text !== 'string') return text;
+            // Avoid double-formatting if already contains inline-flex fraction markup
+            if (text.includes('inline-flex flex-col')) return text;
+
+            // Match expressions like (-5), (1/2), x/4, 1/3, etc.
+            return text.replace(/\(([^()\/]+)\/([^()\/]+)\)|([^\s()+\-=*/<>]+)\/([^\s()+\-=*/<>]+)/g, (match, pNum, pDen, sNum, sDen) => {
+                const rawNum = (pNum || sNum).trim();
+                const rawDen = (pDen || sDen).trim();
+
+                let leadingSign = '';
+                let num = rawNum;
+                if ((rawNum.startsWith('-') || rawNum.startsWith('+')) && rawNum.length > 1) {
+                    leadingSign = rawNum[0];
+                    num = rawNum.slice(1);
+                }
+
+                return `${leadingSign}<span class="inline-flex flex-col items-center align-middle mx-1 leading-none"><span class="border-b-2 border-current px-1.5 pb-0.5 text-[0.82em] font-bold">${num}</span><span class="pt-0.5 text-[0.82em] font-bold">${rawDen}</span></span>`;
+            });
+        }
+
+        // Render Current Question
+        function renderQuestion() {
+            const q = quizQuestions[state.currentIndex];
+            const userAnswer = state.answers[q.id];
+            const isAnswered = userAnswer !== undefined;
+
+            // Update Badge & Counter
+            const badgeEl = document.getElementById('question-badge');
+            badgeEl.textContent = q.category;
+
+            // Color-code badge by category
+            const badgeColors = {
+                "Direct Equations": "bg-indigo-100 text-indigo-700",
+                "Verbal Equations": "bg-purple-100 text-purple-700",
+                "Word Problems": "bg-teal-100 text-teal-700"
+            };
+            badgeEl.className = `inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${badgeColors[q.category] || 'bg-indigo-100 text-indigo-700'}`;
+
+            document.getElementById('question-counter').textContent = `Question ${state.currentIndex + 1} of ${quizQuestions.length}`;
+            document.getElementById('question-text').innerHTML = formatVerticalFractions(q.prompt);
+
+            // Equation display block
+            const eqEl = document.getElementById('question-equation');
+            if (q.equation && q.equation.trim() !== '') {
+                eqEl.innerHTML = formatVerticalFractions(q.equation);
+                eqEl.classList.remove('hidden');
+            } else {
+                eqEl.classList.add('hidden');
+            }
+
+            // Render Options
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            const letters = ['A', 'B', 'C', 'D'];
+
+            q.options.forEach((optionText, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                
+                // Base styling
+                let btnClasses = "w-full text-left p-4 rounded-2xl border-2 transition-all flex items-center justify-between gap-3 ";
+                let letterClasses = "w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 transition-colors ";
+                let statusIcon = "";
+
+                if (!isAnswered) {
+                    // Interactive state before answering
+                    btnClasses += "border-slate-200 bg-white hover:border-indigo-400 hover:bg-indigo-50/40 cursor-pointer active:scale-[0.99]";
+                    letterClasses += "bg-slate-100 text-slate-700";
+                } else {
+                    // Locked state after answering
+                    btn.disabled = true;
+                    if (idx === q.correctIndex) {
+                        // Always highlight the correct option in green
+                        btnClasses += "border-emerald-500 bg-emerald-50/80 text-emerald-950";
+                        letterClasses += "bg-emerald-500 text-white";
+                        statusIcon = '<i class="fa-solid fa-circle-check text-emerald-600 text-lg shrink-0"></i>';
+                    } else if (idx === userAnswer && userAnswer !== q.correctIndex) {
+                        // Highlight user's wrong pick in red
+                        btnClasses += "border-rose-500 bg-rose-50/80 text-rose-950";
+                        letterClasses += "bg-rose-500 text-white";
+                        statusIcon = '<i class="fa-solid fa-circle-xmark text-rose-600 text-lg shrink-0"></i>';
+                    } else {
+                        // Neutral faded state for unselected wrong options
+                        btnClasses += "border-slate-100 bg-slate-50/60 text-slate-400 opacity-75";
+                        letterClasses += "bg-slate-200/70 text-slate-500";
+                    }
+                }
+
+                btn.className = btnClasses;
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3.5">
+                        <span class="${letterClasses}">${letters[idx]}</span>
+                        <span class="font-medium text-sm sm:text-base">${formatVerticalFractions(optionText)}</span>
+                    </div>
+                    ${statusIcon}
+                `;
+
+                if (!isAnswered) {
+                    btn.onclick = () => selectOption(idx);
+                }
+
+                optionsContainer.appendChild(btn);
+            });
+
+            // Render Instant Feedback Box
+            const feedbackBox = document.getElementById('feedback-box');
+            if (isAnswered) {
+                const isCorrect = userAnswer === q.correctIndex;
+                feedbackBox.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-200', 'text-emerald-900', 'bg-rose-50', 'border-rose-200', 'text-rose-900');
+
+                if (isCorrect) {
+                    feedbackBox.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-900');
+                    document.getElementById('feedback-icon').innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i>';
+                    document.getElementById('feedback-title').textContent = 'Correct! Great job!';
+                } else {
+                    feedbackBox.classList.add('bg-rose-50', 'border-rose-200', 'text-rose-900');
+                    document.getElementById('feedback-icon').innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600"></i>';
+                    document.getElementById('feedback-title').textContent = `Incorrect — The correct answer is ${letters[q.correctIndex]}.`;
+                }
+                document.getElementById('feedback-explanation').innerHTML = formatVerticalFractions(q.explanation);
+            } else {
+                feedbackBox.classList.add('hidden');
+            }
+
+            // Update Prev / Next Buttons
+            document.getElementById('btn-prev').disabled = state.currentIndex === 0;
+            
+            const btnNext = document.getElementById('btn-next');
+            const btnFinish = document.getElementById('btn-finish');
+            
+            if (state.currentIndex === quizQuestions.length - 1) {
+                btnNext.classList.add('hidden');
+                btnFinish.classList.remove('hidden');
+                btnFinish.classList.add('flex');
+            } else {
+                btnNext.classList.remove('hidden');
+                btnFinish.classList.add('hidden');
+                btnFinish.classList.remove('flex');
+            }
+        }
+
+        // Handle Option Selection
+        function selectOption(optionIndex) {
+            const q = quizQuestions[state.currentIndex];
+            // Prevent changing answer once submitted
+            if (state.answers[q.id] !== undefined) return;
+
+            state.answers[q.id] = optionIndex;
+            saveState();
+            renderQuestion();
+            renderNavigator();
+            updateStats();
+        }
+
+        // Navigate Next / Previous
+        function navigateQuestion(delta) {
+            const newIndex = state.currentIndex + delta;
+            if (newIndex >= 0 && newIndex < quizQuestions.length) {
+                state.currentIndex = newIndex;
+                saveState();
+                renderQuestion();
+                renderNavigator();
+            }
+        }
+
+        // Jump directly to a specific question number
+        function jumpToQuestion(index) {
+            if (index >= 0 && index < quizQuestions.length) {
+                state.currentIndex = index;
+                saveState();
+                renderQuestion();
+                renderNavigator();
+                // On mobile, smoothly scroll up to the question card
+                if (window.innerWidth < 1024) {
+                    document.getElementById('question-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        }
+
+        // Render Navigator Grid
+        function renderNavigator() {
+            const navGrid = document.getElementById('nav-grid');
+            navGrid.innerHTML = '';
+
+            quizQuestions.forEach((q, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.textContent = q.id;
+                btn.onclick = () => jumpToQuestion(idx);
+
+                const userAnswer = state.answers[q.id];
+                const isCurrent = idx === state.currentIndex;
+
+                let classes = "h-10 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center ";
+
+                if (userAnswer === undefined) {
+                    classes += "bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200 ";
+                } else if (userAnswer === q.correctIndex) {
+                    classes += "bg-emerald-500 text-white hover:bg-emerald-600 shadow-xs ";
+                } else {
+                    classes += "bg-rose-500 text-white hover:bg-rose-600 shadow-xs ";
+                }
+
+                if (isCurrent) {
+                    classes += "ring-2 ring-offset-2 ring-indigo-600 scale-105 ";
+                }
+
+                btn.className = classes;
+                navGrid.appendChild(btn);
+            });
+        }
+
+        // Update Header & Navigator Counters
+        function updateStats() {
+            let correctCount = 0;
+            let wrongCount = 0;
+
+            quizQuestions.forEach(q => {
+                const ans = state.answers[q.id];
+                if (ans !== undefined) {
+                    if (ans === q.correctIndex) {
+                        correctCount++;
+                    } else {
+                        wrongCount++;
+                    }
+                }
+            });
+
+            const totalAnswered = correctCount + wrongCount;
+            const unansweredCount = quizQuestions.length - totalAnswered;
+            const progressPercent = Math.round((totalAnswered / quizQuestions.length) * 100);
+
+            document.getElementById('header-progress').textContent = `${totalAnswered}/${quizQuestions.length}`;
+            document.getElementById('header-score').textContent = correctCount;
+            document.getElementById('top-progress-bar').style.width = `${progressPercent}%`;
+
+            document.getElementById('count-correct').textContent = correctCount;
+            document.getElementById('count-wrong').textContent = wrongCount;
+            document.getElementById('count-unanswered').textContent = unansweredCount;
+        }
+
+        // Show Final Results Summary Modal
+        function showSummaryView() {
+            let correctCount = 0;
+            let wrongCount = 0;
+            const topicStats = {};
+
+            quizQuestions.forEach(q => {
+                if (!topicStats[q.category]) {
+                    topicStats[q.category] = { total: 0, correct: 0 };
+                }
+                topicStats[q.category].total++;
+
+                const ans = state.answers[q.id];
+                if (ans !== undefined) {
+                    if (ans === q.correctIndex) {
+                        correctCount++;
+                        topicStats[q.category].correct++;
+                    } else {
+                        wrongCount++;
+                    }
+                }
+            });
+
+            const unansweredCount = quizQuestions.length - (correctCount + wrongCount);
+            const percentage = Math.round((correctCount / quizQuestions.length) * 100);
+
+            document.getElementById('final-percentage').textContent = percentage;
+            document.getElementById('final-score-fraction').textContent = `${correctCount} / ${quizQuestions.length}`;
+            document.getElementById('stat-correct').textContent = correctCount;
+            document.getElementById('stat-wrong').textContent = wrongCount;
+            document.getElementById('stat-unanswered').textContent = unansweredCount;
+
+            // Populate topic breakdown
+            const breakdownEl = document.getElementById('topic-breakdown');
+            breakdownEl.innerHTML = '';
+
+            Object.keys(topicStats).forEach(cat => {
+                const { total, correct } = topicStats[cat];
+                const pct = Math.round((correct / total) * 100);
+                const row = document.createElement('div');
+                row.className = "bg-slate-50 px-3.5 py-2.5 rounded-xl border border-slate-100";
+                row.innerHTML = `
+                    <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+                        <span>${cat}</span>
+                        <span>${correct}/${total} (${pct}%)</span>
+                    </div>
+                    <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-indigo-600 h-1.5 rounded-full" style="width: ${pct}%"></div>
+                    </div>
+                `;
+                breakdownEl.appendChild(row);
+            });
+
+            document.getElementById('summary-modal').classList.remove('hidden');
+        }
+
+        function closeSummaryView() {
+            document.getElementById('summary-modal').classList.add('hidden');
+        }
+
+        // Custom Reset Modal Handlers
+        function openResetModal() {
+            document.getElementById('reset-modal').classList.remove('hidden');
+        }
+
+        function closeResetModal() {
+            document.getElementById('reset-modal').classList.add('hidden');
+        }
+
+        function confirmReset() {
+            state = {
+                currentIndex: 0,
+                answers: {}
+            };
+            saveState();
+            closeResetModal();
+            renderQuestion();
+            renderNavigator();
+            updateStats();
+        }
+
+        // Initialize Quiz on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            renderQuestion();
+            renderNavigator();
+            updateStats();
+        });
+    </script>
+</body>
+</html>
